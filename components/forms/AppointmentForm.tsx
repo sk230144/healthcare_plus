@@ -17,14 +17,15 @@ import {
 import { Input } from "@/components/ui/input"
 import CustomformField from "../ui/CustomformField"
 import SubmitButton from "../SubmitButton"
-import { useState } from "react"
+import { SetStateAction, useState } from "react"
 import { useRouter } from "next/navigation"
 import { createUser } from "@/lib/actions/patient.action"
 import Image from "next/image"
 import { Doctors } from "@/constants"
 import { SelectItem } from "../ui/select"
-import { createAppointment } from "@/lib/actions/appointment.action"
+import { createAppointment, updateAppointment } from "@/lib/actions/appointment.action"
 import { getAppointmentSchema } from "@/lib/validation"
+import { Appointment } from "@/lib/actions/appwrite.types"
 
 
 export enum FormFieldType {
@@ -48,10 +49,14 @@ export const AppointmentForm = ({
   userId,
   patientId,
   type = "create",
+  appointment,
+  setOpen,
 }: {
   userId: string;
   patientId: string;
   type: "create" | "schedule" | "cancel";
+  appointment?: Appointment;
+  setOpen?: (open: boolean) => void;
 }) => {
 
   const router = useRouter();
@@ -64,11 +69,13 @@ export const AppointmentForm = ({
   const form = useForm<z.infer<typeof AppointmentFormValidation>>({
     resolver: zodResolver(AppointmentFormValidation),
     defaultValues: {
-      primaryPhysician: "",
-      schedule: new Date(),
-      reason: "",
-      note:"",
-      cancellationReason:""
+      primaryPhysician: appointment ? appointment?.primaryPhysician : "",
+      schedule: appointment
+        ? new Date(appointment?.schedule!)
+        : new Date(Date.now()),
+      reason: appointment ? appointment.reason : "",
+      note: appointment?.note || "",
+      cancellationReason: appointment?.cancellationReason || "",
     },
   })
 
@@ -110,6 +117,25 @@ export const AppointmentForm = ({
           router.push(
             `/patients/${userId}/new-appointment/success?appointmentId=${newAppointment.$id}`
           );
+        }
+      }else {
+        const appointmentToUpdate = {
+          userId,
+          appointmentId: appointment?.$id!,
+          appointment: {
+            primaryPhysician: values?.primaryPhysician,
+            schedule: new Date(values.schedule),
+            status: status as Status,
+            cancellationReason: values?.cancellationReason,
+          },
+          type,
+        };
+
+        const updatedAppointment = await updateAppointment(appointmentToUpdate);
+
+        if (updatedAppointment) {
+          setOpen && setOpen(false);
+          form.reset();
         }
       }
     } catch (error) {
