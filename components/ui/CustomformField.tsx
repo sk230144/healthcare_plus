@@ -150,7 +150,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
 
 
 const CustomformField = ( props : CustomProps) => {
-    const { control,fieldType, name, label } = props;
+    const { control,fieldType, name, label, disabled } = props;
 
     return (
         <FormField
@@ -161,7 +161,7 @@ const CustomformField = ( props : CustomProps) => {
                     {fieldType !== FormFieldType.CHECKBOX && label && (
                         <FormLabel>{label}</FormLabel>
                     )}
-                    <RenderInput field={field} props={props} />
+                    <RenderInput field={field} props={{ ...props, disabled }} />
                     <FormMessage className="shad-error" />
                 </FormItem>
             )}

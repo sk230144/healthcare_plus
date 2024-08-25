@@ -49,7 +49,7 @@ const RequestSuccess = async ({
           <p>Requested appointment details: </p>
           <div className="flex items-center gap-3">
             <Image
-             src={doctor?.image!}
+              src={doctor?.image!}
               alt="doctor"
               width={100}
               height={100}
@@ -68,11 +68,18 @@ const RequestSuccess = async ({
           </div>
         </section>
 
-        <Button variant="outline" className="shad-primary-btn" asChild>
-          <Link href={`/patients/${userId}/new-appointment`}>
-            New Appointment
-          </Link>
-        </Button>
+        <div className="flex space-x-6">
+          <Button variant="outline" className="shad-primary-btn" asChild>
+            <Link href={`/patients/${userId}/new-appointment`}>
+              New Appointment
+            </Link>
+          </Button>
+          <Button variant="outline" className="shad-primary-btn" asChild>
+            <Link href={`/`}>
+              Back To Home
+            </Link>
+          </Button>
+        </div>
 
         <p className="copyright">© 2024 CarePluse</p>
       </div>

@@ -118,6 +118,7 @@ export const RegistrationForm = ({ user }: { user: User }) => {
                         placeholder="John Doe"
                         iconSrc="/assets/icons/user.svg"
                         iconAlt="user"
+                        disabled
                     />
                     {/* EMAIL & PHONE */}
                     <div className="flex flex-col gap-6 xl:flex-row">
@@ -129,6 +130,7 @@ export const RegistrationForm = ({ user }: { user: User }) => {
                             placeholder="johndoe@gmail.com"
                             iconSrc="/assets/icons/email.svg"
                             iconAlt="email"
+                            disabled
                         />
 
                         <CustomformField
@@ -137,6 +139,7 @@ export const RegistrationForm = ({ user }: { user: User }) => {
                             name="phone"
                             label="Phone Number"
                             placeholder="(555) 123-4567"
+                            disabled
                         />
                     </div>
 
