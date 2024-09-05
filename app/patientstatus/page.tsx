@@ -1,15 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { StatCard } from "@/components/StatCard";
 
-import { getRecentAppointmentList } from "@/lib/actions/appointment.action";
+import { getPatientstList } from "@/lib/actions/appointment.action";
 import { DataTable } from "@/components/table1/DataTable";
 import { columns } from "@/components/table1/columns";
 
 
 const PatientStatus = async () => {
-  const appointments = await getRecentAppointmentList();
+  const appointments = await getPatientstList();
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col space-y-14 mb-6">
