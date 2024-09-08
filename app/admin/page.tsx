@@ -5,11 +5,11 @@ import { StatCard } from "@/components/StatCard";
 import { columns } from "@/components/table/columns";
 import { DataTable } from "@/components/table/DataTable";
 import { getRecentAppointmentList } from "@/lib/actions/appointment.action";
+import { formatDateTime } from "@/lib/utils";
 
 
 const AdminPage = async () => {
   const appointments = await getRecentAppointmentList();
-
   return (
     <div className="mx-auto flex max-w-7xl flex-col space-y-14">
       <header className="admin-header">
@@ -54,6 +54,7 @@ const AdminPage = async () => {
             icon={"/assets/icons/cancelled.svg"}
           />
         </section>
+
 
         <DataTable columns={columns} data={appointments.documents} />
       </main>

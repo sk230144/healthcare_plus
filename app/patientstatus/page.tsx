@@ -23,7 +23,7 @@ const PatientStatus = async () => {
           />
         </Link>
 
-        <p className="text-16-semibold">Patients Appointment</p>
+        <p className="text-16-semibold">Patients  Appointment</p>
       </header>
 
       <main className="admin-main">
@@ -35,7 +35,7 @@ const PatientStatus = async () => {
         </section>
 
 
-        <DataTable columns={columns} data={appointments.documents} />
+        <DataTable columns={columns} data={appointments?.documents} />
       </main>
     </div>
   );

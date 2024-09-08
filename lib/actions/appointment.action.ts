@@ -34,6 +34,55 @@ export const createAppointment = async (
 };
 
 
+// export const getRecentAppointmentList = async () => {
+//   try {
+//     const appointments = await databases.listDocuments(
+//       DATABASE_ID!,
+//       APPOINTMENT_COLLECTION_ID!,
+//       [Query.orderDesc("$createdAt")]
+//     );
+  
+//     const initialCounts = {
+//       scheduledCount: 0,
+//       pendingCount: 0,
+//       cancelledCount: 0,
+//     };
+
+//     const counts = (appointments.documents as Appointment[]).reduce(
+//       (acc, appointment) => {
+//         switch (appointment.status) {
+//           case "scheduled":
+//             acc.scheduledCount++;
+//             break;
+//           case "pending":
+//             acc.pendingCount++;
+//             break;
+//           case "cancelled":
+//             acc.cancelledCount++;
+//             break;
+//         }
+//         return acc;
+//       },
+//       initialCounts
+//     );
+
+//     const data = {
+//       totalCount: appointments.total,
+//       ...counts,
+//       documents: appointments.documents,
+//     };
+
+//     return parseStringify(data);
+//   } catch (error) {
+//     console.error(
+//       "An error occurred while retrieving the recent appointments:",
+//       error
+//     );
+//   }
+// };
+
+
+
 export const getRecentAppointmentList = async () => {
   try {
     const appointments = await databases.listDocuments(
@@ -41,14 +90,32 @@ export const getRecentAppointmentList = async () => {
       APPOINTMENT_COLLECTION_ID!,
       [Query.orderDesc("$createdAt")]
     );
-  
+
     const initialCounts = {
       scheduledCount: 0,
       pendingCount: 0,
       cancelledCount: 0,
     };
 
-    const counts = (appointments.documents as Appointment[]).reduce(
+    const currentDate = new Date();
+    const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
+
+    const filteredAppointments = (appointments.documents as Appointment[]).filter(
+      (appointment) => {
+        const appointmentDate = new Date(appointment.schedule!);
+        const isExpired = currentDate.getTime() - appointmentDate.getTime() > oneDayInMilliseconds;
+
+        if (appointment.status === "pending") {
+          // Keep pending appointments regardless of expiration
+          return true;
+        }
+
+        // Filter out expired appointments for other statuses
+        return !isExpired;
+      }
+    );
+
+    const counts = filteredAppointments.reduce(
       (acc, appointment) => {
         switch (appointment.status) {
           case "scheduled":
@@ -67,10 +134,32 @@ export const getRecentAppointmentList = async () => {
     );
 
     const data = {
-      totalCount: appointments.total,
+      totalCount: filteredAppointments?.length || 0,
       ...counts,
-      documents: appointments.documents,
+      documents: filteredAppointments || [],
     };
+
+    // Delete expired appointments from the database (excluding pending appointments)
+    const expiredAppointments = (appointments.documents as Appointment[]).filter(
+      (appointment) => {
+        const appointmentDate = new Date(appointment.schedule!);
+        const isExpired = currentDate.getTime() - appointmentDate.getTime() > oneDayInMilliseconds;
+
+        return appointment.status !== "pending" && isExpired;
+      }
+    );
+
+    for (const appointment of expiredAppointments) {
+      try {
+        await databases.deleteDocument(
+          DATABASE_ID!,
+          APPOINTMENT_COLLECTION_ID!,
+          appointment.$id
+        );
+      } catch (error) {
+        console.error(`Error deleting appointment with ID ${appointment.$id}:`, error);
+      }
+    }
 
     return parseStringify(data);
   } catch (error) {
@@ -78,10 +167,14 @@ export const getRecentAppointmentList = async () => {
       "An error occurred while retrieving the recent appointments:",
       error
     );
+    throw error;
   }
 };
 
-export const getPatientstList = async () => {
+
+
+
+export const getPatientstList1 = async () => {
   try {
     const appointments = await databases.listDocuments(
       DATABASE_ID!,
@@ -128,7 +221,96 @@ export const getPatientstList = async () => {
   }
 };
 
-//  SEND SMS NOTIFICATION
+
+export const getPatientstList = async () => {
+  try {
+    const appointments = await databases.listDocuments(
+      DATABASE_ID!,
+      APPOINTMENT_COLLECTION_ID!,
+      [Query.orderDesc("$createdAt")]
+    );
+
+    const initialCounts = {
+      scheduledCount: 0,
+      pendingCount: 0,
+      cancelledCount: 0,
+    };
+
+    const currentDate = new Date();
+    const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
+
+    const filteredAppointments = (appointments.documents as Appointment[]).filter(
+      (appointment) => {
+        const appointmentDate = new Date(appointment.schedule!);
+        const isExpired = currentDate.getTime() - appointmentDate.getTime() > oneDayInMilliseconds;
+
+        if (appointment.status === "pending") {
+          // Keep pending appointments regardless of expiration
+          return true;
+        }
+
+        // Filter out expired appointments for other statuses
+        return !isExpired;
+      }
+    );
+
+    const counts = filteredAppointments.reduce(
+      (acc, appointment) => {
+        switch (appointment.status) {
+          case "scheduled":
+            acc.scheduledCount++;
+            break;
+          case "pending":
+            acc.pendingCount++;
+            break;
+          case "cancelled":
+            acc.cancelledCount++;
+            break;
+        }
+        return acc;
+      },
+      initialCounts
+    );
+
+    const data = {
+      totalCount: filteredAppointments?.length || 0,
+      ...counts,
+      documents: filteredAppointments || [],
+    };
+
+    // Delete expired appointments from the database (excluding pending appointments)
+    const expiredAppointments = (appointments.documents as Appointment[]).filter(
+      (appointment) => {
+        const appointmentDate = new Date(appointment.schedule!);
+        const isExpired = currentDate.getTime() - appointmentDate.getTime() > oneDayInMilliseconds;
+
+        return appointment.status !== "pending" && isExpired;
+      }
+    );
+
+    for (const appointment of expiredAppointments) {
+      try {
+        await databases.deleteDocument(
+          DATABASE_ID!,
+          APPOINTMENT_COLLECTION_ID!,
+          appointment.$id
+        );
+      } catch (error) {
+        console.error(`Error deleting appointment with ID ${appointment.$id}:`, error);
+      }
+    }
+
+    return parseStringify(data);
+  } catch (error) {
+    console.error(
+      "An error occurred while retrieving the recent appointments:",
+      error
+    );
+    throw error;
+  }
+};
+
+
 export const sendSMSNotification = async (userId: string, content: string) => {
   try {
     // https://appwrite.io/docs/references/1.5.x/server-nodejs/messaging#createSms
