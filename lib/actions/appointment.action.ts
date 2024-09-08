@@ -311,6 +311,7 @@ export const getPatientstList = async () => {
 };
 
 
+
 export const sendSMSNotification = async (userId: string, content: string) => {
   try {
     // https://appwrite.io/docs/references/1.5.x/server-nodejs/messaging#createSms

@@ -29,13 +29,16 @@ export default function Home({ searchParams }: SearchParamProps) {
             <p className="justify-items-end text-dark-600 xl:text-left">
               © 2024 CarePluse
             </p>
-            <Link href="/?admin=true" className="text-green-500">
+            <Link href="/?admin=true" className="text-green-500 hover:text-white transition-all duration-300">
               Admin
             </Link>
-            
+
           </div>
-          <Link href="/patientstatus" className="text-red-400 mt-1 text-16-regular xl:text-right">
-              Check Your Status
+          <Link
+            href="/patientstatus"
+            className="text-red-400 mt-3 text-16-regular xl:text-right hover:text-white transition-all duration-300"
+          >
+            Check Your Appointment
           </Link>
         </div>
       </section>
