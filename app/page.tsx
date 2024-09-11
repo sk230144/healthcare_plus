@@ -34,12 +34,12 @@ export default function Home({ searchParams }: SearchParamProps) {
             </Link>
 
           </div>
-          <Link
+          {/* <Link
             href="/patientstatus"
             className="text-red-400 mt-3 text-16-regular xl:text-right hover:text-white transition-all duration-300"
           >
             Check Your Appointment
-          </Link>
+          </Link> */}
         </div>
       </section>
 
